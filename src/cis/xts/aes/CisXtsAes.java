@@ -16,6 +16,7 @@ public class CisXtsAes {
     /**
      * @param args the command line arguments
      */
+    /**
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
         Scanner in = new Scanner(System.in);
@@ -23,6 +24,6 @@ public class CisXtsAes {
         String key = in.nextLine();
         AES aes = new AES(plaintext, key);
         System.out.println(aes.AESEncrypt());
-    }
-    
+    }*/
+
 }

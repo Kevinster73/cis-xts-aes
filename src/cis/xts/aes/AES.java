@@ -34,6 +34,6 @@ public class AES {
         byte[] result = cipher.doFinal(DatatypeConverter.parseHexBinary(plaintext));
 
         return (DatatypeConverter.printHexBinary(result));
-        
+
     }
 }
