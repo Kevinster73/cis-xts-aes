@@ -30,20 +30,23 @@ public class XTS {
         }
         this.key = key;
         this.tweak = tweak;
-        int[] key1 = new int[SPLIT_KEY_SIZE / BYTE_SIZE];
-        System.arraycopy(key, 0, key1, 0, key1.length);
-        int[] key2 = new int[SPLIT_KEY_SIZE / BYTE_SIZE];
-        System.arraycopy(key, SPLIT_KEY_SIZE / BYTE_SIZE, key2, 0, key2.length);
-        aes1 = new AES();
-        aes1.setRoundKey(key1);
-        aes2 = new AES();
-        aes2.setRoundKey(key2);
+        String keystr = Util.convertToString(key);
+        String key1 = keystr.substring(0, SPLIT_KEY_SIZE / BYTE_SIZE);
+        String key2 = keystr.substring(SPLIT_KEY_SIZE / BYTE_SIZE, keystr.length());
+//        int[] key1 = new int[SPLIT_KEY_SIZE / BYTE_SIZE];
+//        System.arraycopy(key, 0, key1, 0, key1.length);
+//        int[] key2 = new int[SPLIT_KEY_SIZE / BYTE_SIZE];
+//        System.arraycopy(key, SPLIT_KEY_SIZE / BYTE_SIZE, key2, 0, key2.length);
+        aes1 = new AES(key1);
+        aes2 = new AES(key2);
+        
+        
 
         alpha[alpha.length - 1] = ALPHA;
     }
 
     // enkripsi plaintext keseluruhan
-    public int[] encrypt(int[] plaintext) {
+    public int[] encrypt(int[] plaintext) throws Exception {
 
         ciphertext = new int[plaintext.length];
 
@@ -128,9 +131,9 @@ public class XTS {
     }
 
     // enkripsi per block
-    public int[] blockEncrypt(int[] plaintext, int blockKe) {
+    public int[] blockEncrypt(int[] plaintext, int blockKe) throws Exception {
 
-        int[] hasilEncryptSatu = aes2.encrypt(tweak);
+        int[] hasilEncryptSatu = aes2.AESEncrypt(Util.convertToString(tweak));
 
         int[] temp = alpha;
         for (int i = 0; i < blockKe - 1; i++) {
@@ -145,7 +148,7 @@ public class XTS {
             pepe[i] = plaintext[i] ^ te[i];
         }
 
-        int[] cece = aes1.encrypt(pepe);
+        int[] cece = aes1.AESEncrypt(Util.convertToString(pepe));
 
         int[] hasil;
         hasil = new int[16];
@@ -157,9 +160,9 @@ public class XTS {
     }
 
     // dekripsi per block
-    public int[] blockDecrypt(int[] ciphertext, int blockKe) {
+    public int[] blockDecrypt(int[] ciphertext, int blockKe) throws Exception {
 
-        int[] hasilEncryptSatu = aes2.encrypt(tweak);
+        int[] hasilEncryptSatu = aes2.AESEncrypt(Util.convertToString(tweak));
 
         int[] temp = alpha;
         for (int i = 0; i < blockKe - 1; i++) {

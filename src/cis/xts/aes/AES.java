@@ -17,23 +17,25 @@ import javax.xml.bind.DatatypeConverter;
  */
 public class AES {
 
-    final String plaintext;
     final String key;
 
-    public AES(String plaintext, String key) {
-        this.plaintext = plaintext;
+    public AES(String key) {
         this.key = key;
     }
 
-    public String AESEncrypt() throws Exception {
+    public int[] AESEncrypt(String plaintext) throws Exception {
         SecretKey AESkey = new SecretKeySpec(DatatypeConverter.parseHexBinary(key), "AES");
 
         Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, AESkey);
 
         byte[] result = cipher.doFinal(DatatypeConverter.parseHexBinary(plaintext));
-
-        return (DatatypeConverter.printHexBinary(result));
+        String ciphertext = (DatatypeConverter.printHexBinary(result));
+        return Util.convertByteToIntArray(ciphertext);
 
     }
+    
+    
+    
+    
 }
