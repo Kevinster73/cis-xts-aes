@@ -5,186 +5,155 @@
  */
 package cis.xts.aes;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 /**
  *
  * @author prakash
  */
 public class XTS {
 
-    private static final int KEY_SIZE = 256;
-    private static final int SPLIT_KEY_SIZE = 128;
     private static final int BYTE_SIZE = 8;
     private static final int BLOCK_SIZE = 128;
     private static final int ALPHA = 0x02;
-    private static int[] key = new int[KEY_SIZE / BYTE_SIZE];
-    private static int[] tweak = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10};
     private static int[] plaintext;
     private static int[] ciphertext;
     private static int[] alpha = new int[16];
+    private static String tweak = "0123456789abcdeffedcba9876543210";
     private static AES aes1;
     private static AES aes2;
 
-    public XTS(int[] key) throws MyException {
-        if (key.length != 32) {
+    public XTS(File keyFile) throws MyException, FileNotFoundException, IOException {
+        FileReader mykey = new FileReader(keyFile);
+        BufferedReader in = new BufferedReader(mykey);
+        String key = in.readLine();
+        if (key.length() != 64) {
             throw new MyException("Key must have exactly 256 bits.");
         }
-        this.key = key;
-        this.tweak = tweak;
-        String keystr = Util.convertToString(key);
-        String key1 = keystr.substring(0, SPLIT_KEY_SIZE / BYTE_SIZE);
-        String key2 = keystr.substring(SPLIT_KEY_SIZE / BYTE_SIZE, keystr.length());
-//        int[] key1 = new int[SPLIT_KEY_SIZE / BYTE_SIZE];
-//        System.arraycopy(key, 0, key1, 0, key1.length);
-//        int[] key2 = new int[SPLIT_KEY_SIZE / BYTE_SIZE];
-//        System.arraycopy(key, SPLIT_KEY_SIZE / BYTE_SIZE, key2, 0, key2.length);
+        String key1 = key.substring(0, 32);
+        String key2 = key.substring(32);
         aes1 = new AES(key1);
         aes2 = new AES(key2);
-        
-        
-
         alpha[alpha.length - 1] = ALPHA;
     }
 
-    // enkripsi plaintext keseluruhan
     public int[] encrypt(int[] plaintext) throws Exception {
-
         ciphertext = new int[plaintext.length];
-
         int m = plaintext.length / (BLOCK_SIZE / BYTE_SIZE);
-
-        //plaintext per block
         int[] plntxt = new int[16];
         int[] citext;
 
-        //enkripsi blok yang utuh 128 bit
         for (int q = 0; q < m - 1; q++) {
             System.arraycopy(plaintext, q * 16, plntxt, 0, plntxt.length);
-            citext = blockEncrypt(plntxt, q);
+            citext = blockEnc(plntxt, q);
             System.arraycopy(citext, 0, ciphertext, q * 16, citext.length);
         }
+
         if (plaintext.length % (BLOCK_SIZE / BYTE_SIZE) == 0) {
             System.arraycopy(plaintext, (m - 1) * 16, plntxt, 0, plntxt.length);
-            citext = blockEncrypt(plntxt, (m - 1));
+            citext = blockEnc(plntxt, (m - 1));
             System.arraycopy(citext, 0, ciphertext, (m - 1) * 16, citext.length);
-
-            // untuk kasus yang ngga utuh blok terakhirnya
         } else {
-
-            int lastLength = plaintext.length - (m * 16); // panjang block terakhir (<128)
-            int[] lastPlntxt = new int[16]; // block sisa
-
+            int lastLength = plaintext.length - (m * 16);
+            int[] lastPlntxt = new int[16];
             System.arraycopy(plaintext, (m * 16), lastPlntxt, 0, lastLength);
-
-            //enkripsi 2 blok terakhir, bila blok terakhir tidak utuh 128 bit
             System.arraycopy(plaintext, (m - 1) * 16, plntxt, 0, plntxt.length);
-            int[] cece = blockEncrypt(plntxt, m - 1);
-            System.arraycopy(cece, 0, ciphertext, m * 16, lastLength);
-
-            System.arraycopy(cece, lastLength, lastPlntxt, lastLength, lastPlntxt.length - lastLength);
-            citext = blockEncrypt(lastPlntxt, m);
-
+            int[] CC = blockEnc(plntxt, m - 1);
+            System.arraycopy(CC, 0, ciphertext, m * 16, lastLength);
+            System.arraycopy(CC, lastLength, lastPlntxt, lastLength, lastPlntxt.length - lastLength);
+            citext = blockEnc(lastPlntxt, m);
             System.arraycopy(citext, 0, ciphertext, (m - 1) * 16, citext.length);
         }
+
         return ciphertext;
     }
 
-    // dekripsi ciphertext keseluruhan
     public int[] decrypt(int[] ciphertext) throws Exception {
-
         plaintext = new int[ciphertext.length];
-
         int m = ciphertext.length / (BLOCK_SIZE / BYTE_SIZE);
-
-        //ciphertext per block
         int[] citext = new int[16];
         int[] plntxt;
 
-        //dekripsi blok yang utuh 128 bit
         for (int q = 0; q < m - 1; q++) {
             System.arraycopy(ciphertext, q * 16, citext, 0, citext.length);
-            plntxt = blockDecrypt(citext, q);
+            plntxt = blockDec(citext, q);
             System.arraycopy(plntxt, 0, plaintext, q * 16, plntxt.length);
         }
+
         if (ciphertext.length % (BLOCK_SIZE / BYTE_SIZE) == 0) {
             System.arraycopy(ciphertext, (m - 1) * 16, citext, 0, citext.length);
-            plntxt = blockDecrypt(citext, (m - 1));
+            plntxt = blockDec(citext, (m - 1));
             System.arraycopy(plntxt, 0, plaintext, (m - 1) * 16, plntxt.length);
-
-            // untuk kasus yang ngga utuh blok terakhirnya
         } else {
-            int lastLength = ciphertext.length - (m * 16); // panjang block terakhir (<128)
+            int lastLength = ciphertext.length - (m * 16);
             int[] lastCitext = new int[16];
             System.arraycopy(ciphertext, (m * 16), lastCitext, 0, lastLength);
-
-            //enkripsi 2 blok terakhir, bila blok terakhir tidak utuh 128 bit
             System.arraycopy(ciphertext, (m - 1) * 16, citext, 0, citext.length);
-            int[] pepe = blockDecrypt(citext, m);
-
-            System.arraycopy(pepe, 0, plaintext, m * 16, lastLength);
-
-            System.arraycopy(pepe, lastLength, lastCitext, lastLength, lastCitext.length - lastLength);
-            plntxt = blockDecrypt(lastCitext, m - 1);
-
+            int[] PP = blockDec(citext, m);
+            System.arraycopy(PP, 0, plaintext, m * 16, lastLength);
+            System.arraycopy(PP, lastLength, lastCitext, lastLength, lastCitext.length - lastLength);
+            plntxt = blockDec(lastCitext, m - 1);
             System.arraycopy(plntxt, 0, plaintext, (m - 1) * 16, plntxt.length);
         }
+
         return plaintext;
     }
 
-    // enkripsi per block
-    public int[] blockEncrypt(int[] plaintext, int blockKe) throws Exception {
-
-        int[] hasilEncryptSatu = aes2.AESEncrypt(Util.convertToString(tweak));
-
+    public int[] blockEnc(int[] plaintext, int blockNum) throws Exception {
+        int[] resultBefore = Util.byte2int(Util.hex2byte(aes2.AESEncrypt(tweak)));
         int[] temp = alpha;
-        for (int i = 0; i < blockKe - 1; i++) {
+
+        for (int i = 0; i < blockNum - 1; i++) {
             temp = Util.multiplyGF2_128(temp, alpha);
         }
 
-        int[] alphaPangkat = temp;
-        int[] te = Util.multiplyGF2_128(hasilEncryptSatu, alphaPangkat);
+        int[] alphaPow = temp;
+        int[] T = Util.multiplyGF2_128(resultBefore, alphaPow);
+        int[] PP = new int[16];
 
-        int[] pepe = new int[16];
-        for (int i = 0; i < pepe.length; i++) {
-            pepe[i] = plaintext[i] ^ te[i];
+        // Disini error
+        for (int i = 0; i < PP.length; i++) {
+            PP[i] = plaintext[i] ^ T[i];
         }
 
-        int[] cece = aes1.AESEncrypt(Util.convertToString(pepe));
+        int[] CC = Util.byte2int(Util.hex2byte(aes1.AESEncrypt(Util.toHEX(PP))));
+        int[] result = new int[16];
 
-        int[] hasil;
-        hasil = new int[16];
-        for (int i = 0; i < hasil.length; i++) {
-            hasil[i] = cece[i] ^ te[i];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = CC[i] ^ T[i];
         }
 
-        return hasil;
+        return result;
     }
 
-    // dekripsi per block
-    public int[] blockDecrypt(int[] ciphertext, int blockKe) throws Exception {
-
-        int[] hasilEncryptSatu = aes2.AESEncrypt(Util.convertToString(tweak));
-
+    public int[] blockDec(int[] ciphertext, int blockNum) throws Exception {
+        int[] resultBefore = Util.byte2int(Util.hex2byte(aes2.AESEncrypt(tweak)));
         int[] temp = alpha;
-        for (int i = 0; i < blockKe - 1; i++) {
+
+        for (int i = 0; i < blockNum - 1; i++) {
             temp = Util.multiplyGF2_128(temp, alpha);
         }
 
-        int[] alphaPangkat = temp;
-        int[] te = Util.multiplyGF2_128(hasilEncryptSatu, alphaPangkat);
+        int[] alphaPow = temp;
+        int[] T = Util.multiplyGF2_128(resultBefore, alphaPow);
+        int[] CC = new int[16];
 
-        int[] cece = new int[16];
-        for (int i = 0; i < cece.length; i++) {
-            cece[i] = ciphertext[i] ^ te[i];
+        // Disini error
+        for (int i = 0; i < CC.length; i++) {
+            CC[i] = ciphertext[i] ^ T[i];
         }
 
-        int[] pepe = aes1.AESDecrypt(Util.convertToString(cece));
+        int[] PP = Util.byte2int(Util.hex2byte(aes1.AESEncrypt(Util.toHEX(CC))));
+        int[] result = new int[16];
 
-        int[] hasil;
-        hasil = new int[16];
-        for (int i = 0; i < hasil.length; i++) {
-            hasil[i] = pepe[i] ^ te[i];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = PP[i] ^ T[i];
         }
 
-        return hasil;
+        return result;
     }
 }

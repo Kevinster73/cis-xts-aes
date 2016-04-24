@@ -5,7 +5,6 @@
  */
 package cis.xts.aes;
 
-import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -23,31 +22,20 @@ public class AES {
         this.key = key;
     }
 
-    public int[] AESEncrypt(String plaintext) throws Exception {
+    public String AESEncrypt(String plaintext) throws Exception {
         SecretKey AESkey = new SecretKeySpec(DatatypeConverter.parseHexBinary(key), "AES");
-
         Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
         cipher.init(Cipher.ENCRYPT_MODE, AESkey);
-
         byte[] result = cipher.doFinal(DatatypeConverter.parseHexBinary(plaintext));
-        String ciphertext = (DatatypeConverter.printHexBinary(result));
-        return Util.convertByteToIntArray(ciphertext);
-
+        return (DatatypeConverter.printHexBinary(result));
     }
-    
-    public int[] AESDecrypt(String plaintext) throws Exception {
-        SecretKey AESkey = new SecretKeySpec(DatatypeConverter.parseHexBinary(key), "AES");
 
+    public String AESDecrypt(String ciphertext) throws Exception {
+        SecretKey AESkey = new SecretKeySpec(DatatypeConverter.parseHexBinary(key), "AES");
         Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
         cipher.init(Cipher.DECRYPT_MODE, AESkey);
-
-        byte[] result = cipher.doFinal(DatatypeConverter.parseHexBinary(plaintext));
-        String ciphertext = (DatatypeConverter.printHexBinary(result));
-        return Util.convertByteToIntArray(ciphertext);
-
+        byte[] result = cipher.doFinal(DatatypeConverter.parseHexBinary(ciphertext));
+        return (DatatypeConverter.printHexBinary(result));
     }
-    
-    
-    
-    
+
 }

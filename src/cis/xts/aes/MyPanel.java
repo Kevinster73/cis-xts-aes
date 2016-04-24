@@ -211,8 +211,7 @@ public class MyPanel extends javax.swing.JFrame {
         }
         try {
             int[] ciphertextBytes = Util.toIntArray(input);
-            int[] keyBytes = Util.toIntArray(key);
-            XTS cipher = new XTS(keyBytes);
+            XTS cipher = new XTS(key);
             int[] plaintextBytes = cipher.decrypt(ciphertextBytes);
             Util.writeToFile(plaintextBytes, output);
             JOptionPane.showMessageDialog(null, "Success decrypted " + input.getName() + " into " + output.getName() + ".", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -221,7 +220,7 @@ public class MyPanel extends javax.swing.JFrame {
         } catch (MyException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Something weird happened. decrypt", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Something weird happened", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton5ActionPerformed
 
@@ -233,8 +232,7 @@ public class MyPanel extends javax.swing.JFrame {
         }
         try {
             int[] plaintextBytes = Util.toIntArray(input);
-            int[] keyBytes = Util.toIntArray(key);
-            XTS cipher = new XTS(keyBytes);
+            XTS cipher = new XTS(key);
             int[] ciphertextBytes = cipher.encrypt(plaintextBytes);
             Util.writeToFile(ciphertextBytes, output);
             JOptionPane.showMessageDialog(null, "Success encrypted " + input.getName() + " into " + output.getName() + ".", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -243,7 +241,7 @@ public class MyPanel extends javax.swing.JFrame {
         } catch (MyException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Something weird happened. encrypt", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Something weird happened", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_jButton4ActionPerformed
 
