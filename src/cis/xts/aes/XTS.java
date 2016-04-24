@@ -137,11 +137,11 @@ public class XTS {
 
         int[] temp = alpha;
         for (int i = 0; i < blockKe - 1; i++) {
-            temp = CipherUtils.multiplyGF2_128(temp, alpha);
+            temp = Util.multiplyGF2_128(temp, alpha);
         }
 
         int[] alphaPangkat = temp;
-        int[] te = CipherUtils.multiplyGF2_128(hasilEncryptSatu, alphaPangkat);
+        int[] te = Util.multiplyGF2_128(hasilEncryptSatu, alphaPangkat);
 
         int[] pepe = new int[16];
         for (int i = 0; i < pepe.length; i++) {
@@ -166,11 +166,11 @@ public class XTS {
 
         int[] temp = alpha;
         for (int i = 0; i < blockKe - 1; i++) {
-            temp = CipherUtils.multiplyGF2_128(temp, alpha);
+            temp = Util.multiplyGF2_128(temp, alpha);
         }
 
         int[] alphaPangkat = temp;
-        int[] te = CipherUtils.multiplyGF2_128(hasilEncryptSatu, alphaPangkat);
+        int[] te = Util.multiplyGF2_128(hasilEncryptSatu, alphaPangkat);
 
         int[] cece = new int[16];
         for (int i = 0; i < cece.length; i++) {
