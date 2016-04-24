@@ -31,9 +31,11 @@ public class XTS {
         FileReader mykey = new FileReader(keyFile);
         BufferedReader in = new BufferedReader(mykey);
         String key = in.readLine();
+
         if (key.length() != 64) {
             throw new MyException("Key must have exactly 256 bits.");
         }
+
         String key1 = key.substring(0, 32);
         String key2 = key.substring(32);
         aes1 = new AES(key1);

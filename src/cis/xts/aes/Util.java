@@ -148,24 +148,20 @@ public class Util {
         return arrn;
     }
 
-    public static String toHEX(int[] arrn) {
-        int n = arrn.length;
-        char[] arrc = new char[n * 10];
-        int n2 = 0;
-        int n3 = 0;
-        while (n2 < n) {
-            int n4 = arrn[n2++];
-            arrc[n3++] = HEX_DIGITS[n4 >>> 28 & 15];
-            arrc[n3++] = HEX_DIGITS[n4 >>> 24 & 15];
-            arrc[n3++] = HEX_DIGITS[n4 >>> 20 & 15];
-            arrc[n3++] = HEX_DIGITS[n4 >>> 16 & 15];
-            arrc[n3++] = 32;
-            arrc[n3++] = HEX_DIGITS[n4 >>> 12 & 15];
-            arrc[n3++] = HEX_DIGITS[n4 >>> 8 & 15];
-            arrc[n3++] = HEX_DIGITS[n4 >>> 4 & 15];
-            arrc[n3++] = HEX_DIGITS[n4 & 15];
-            arrc[n3++] = 32;
+    public static String toHEX(int[] ia) {
+        int length = ia.length;
+        char[] buf = new char[length * 10];
+        for (int i = 0, j = 0, k; i < length;) {
+            k = ia[i++];
+            buf[j++] = HEX_DIGITS[(k >>> 28) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>> 24) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>> 20) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>> 16) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>> 12) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>> 8) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>> 4) & 0x0F];
+            buf[j++] = HEX_DIGITS[k & 0x0F];
         }
-        return new String(arrc);
+        return new String(buf);
     }
 }
