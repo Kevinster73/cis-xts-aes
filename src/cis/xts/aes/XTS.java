@@ -30,7 +30,7 @@ public class XTS {
         }
         this.key = key;
         this.tweak = tweak;
-        String keystr = Util.convertToString(key);
+        String keystr = Util.toHEX(key);
         String key1 = keystr.substring(0, SPLIT_KEY_SIZE / BYTE_SIZE);
         String key2 = keystr.substring(SPLIT_KEY_SIZE / BYTE_SIZE, keystr.length());
 //        int[] key1 = new int[SPLIT_KEY_SIZE / BYTE_SIZE];
@@ -133,7 +133,7 @@ public class XTS {
     // enkripsi per block
     public int[] blockEncrypt(int[] plaintext, int blockKe) throws Exception {
 
-        int[] hasilEncryptSatu = aes2.AESEncrypt(Util.convertToString(tweak));
+        int[] hasilEncryptSatu = aes2.AESEncrypt(Util.toHEX(tweak));
 
         int[] temp = alpha;
         for (int i = 0; i < blockKe - 1; i++) {
@@ -148,7 +148,7 @@ public class XTS {
             pepe[i] = plaintext[i] ^ te[i];
         }
 
-        int[] cece = aes1.AESEncrypt(Util.convertToString(pepe));
+        int[] cece = aes1.AESEncrypt(Util.toHEX(pepe));
 
         int[] hasil;
         hasil = new int[16];
@@ -162,7 +162,7 @@ public class XTS {
     // dekripsi per block
     public int[] blockDecrypt(int[] ciphertext, int blockKe) throws Exception {
 
-        int[] hasilEncryptSatu = aes2.AESEncrypt(Util.convertToString(tweak));
+        int[] hasilEncryptSatu = aes2.AESEncrypt(Util.toHEX(tweak));
 
         int[] temp = alpha;
         for (int i = 0; i < blockKe - 1; i++) {
@@ -177,7 +177,7 @@ public class XTS {
             cece[i] = ciphertext[i] ^ te[i];
         }
 
-        int[] pepe = aes1.AESDecrypt(Util.convertToString(cece));
+        int[] pepe = aes1.AESDecrypt(Util.toHEX(cece));
 
         int[] hasil;
         hasil = new int[16];

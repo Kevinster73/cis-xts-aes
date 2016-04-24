@@ -20,6 +20,10 @@ public class Util {
                              BLOCK_SIZE = 128,
                              BYTE_SIZE = 8,
                              POLY_128 = 0x87;
+    
+    public static final char[] HEX_DIGITS = {
+        '0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'
+    };
     public static int[] toIntArray(File file) throws IOException {
         FileInputStream stream = new FileInputStream(file);
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -116,52 +120,52 @@ public class Util {
     public static char intToHex (int input){
         char temp = '0';
         switch (input){
-            case 0 : 
+            case 0x00 : 
                 temp = '0';
                 break;
-            case 1 : 
+            case 0x01 : 
                 temp = '1';
                 break;
-            case 2 : 
+            case 0x02 : 
                 temp = '2';
                 break;
-            case 3 : 
+            case 0x03 : 
                 temp = '3';
                 break;
-            case 4 : 
+            case 0x04 : 
                 temp = '4';
                 break;
-            case 5 : 
+            case 0x05 : 
                 temp = '5';
                 break;
-            case 6 : 
+            case 0x06 : 
                 temp = '6';
                 break;
-            case 7 : 
+            case 0x07 : 
                 temp = '7';
                 break;
-            case 8 : 
+            case 0x08 : 
                 temp = '8';
                 break;
-            case 9 : 
+            case 0x09 : 
                 temp = '9';
                 break;
-            case 10 : 
+            case 0x0A : 
                 temp = 'A';
                 break;
-            case 11 : 
+            case 0x0B : 
                 temp = 'B';
                 break;
-            case 12 : 
+            case 0x0C : 
                 temp = 'C';
                 break;
-            case 13 : 
+            case 0x0D : 
                 temp = 'D';
                 break;
-            case 14 : 
+            case 0x0E : 
                 temp = 'E';
                 break;
-            case 15 : 
+            case 0x0F : 
                 temp = 'F';
                 break;
         }
@@ -229,5 +233,21 @@ public class Util {
         }
 
         return res;
+    }
+    public static String toHEX (int[] ia) {
+        int length = ia.length;
+        char[] buf = new char[length * 10];
+        for (int i = 0, j = 0, k; i < length; ) {
+            k = ia[i++];
+            buf[j++] = HEX_DIGITS[(k >>>28) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>>24) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>>20) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>>16) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>>12) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>> 8) & 0x0F];
+            buf[j++] = HEX_DIGITS[(k >>> 4) & 0x0F];
+            buf[j++] = HEX_DIGITS[ k        & 0x0F];
+        }
+        return new String(buf);
     }
 }
