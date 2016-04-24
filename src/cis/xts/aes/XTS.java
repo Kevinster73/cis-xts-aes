@@ -89,7 +89,7 @@ public class XTS {
     }
 
     // dekripsi ciphertext keseluruhan
-    public int[] decrypt(int[] ciphertext) {
+    public int[] decrypt(int[] ciphertext) throws Exception {
 
         plaintext = new int[ciphertext.length];
 
@@ -177,7 +177,7 @@ public class XTS {
             cece[i] = ciphertext[i] ^ te[i];
         }
 
-        int[] pepe = aes1.decrypt(cece);
+        int[] pepe = aes1.AESDecrypt(Util.convertToString(cece));
 
         int[] hasil;
         hasil = new int[16];

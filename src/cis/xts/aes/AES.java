@@ -35,6 +35,18 @@ public class AES {
 
     }
     
+    public int[] AESDecrypt(String plaintext) throws Exception {
+        SecretKey AESkey = new SecretKeySpec(DatatypeConverter.parseHexBinary(key), "AES");
+
+        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+        cipher.init(Cipher.DECRYPT_MODE, AESkey);
+
+        byte[] result = cipher.doFinal(DatatypeConverter.parseHexBinary(plaintext));
+        String ciphertext = (DatatypeConverter.printHexBinary(result));
+        return Util.convertByteToIntArray(ciphertext);
+
+    }
+    
     
     
     
