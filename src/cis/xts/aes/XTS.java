@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cis.xts.aes;
 
 import java.io.BufferedReader;
@@ -11,10 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-/**
- *
- * @author prakash
- */
 public class XTS {
 
     private static final int BYTE_SIZE = 8;
@@ -38,8 +29,10 @@ public class XTS {
 
         String key1 = key.substring(0, 32);
         String key2 = key.substring(32);
-        aes1 = new AES(key1);
-        aes2 = new AES(key2);
+        aes1 = new AES();
+        aes2 = new AES();
+        aes1.setRoundKey(Util.toInt(key1));
+        aes2.setRoundKey(Util.toInt(key2));
         alpha[alpha.length - 1] = ALPHA;
     }
 
@@ -106,7 +99,7 @@ public class XTS {
     }
 
     public int[] blockEnc(int[] plaintext, int blockNum) throws Exception {
-        int[] resultBefore = Util.byte2int(Util.hex2byte(aes2.AESEncrypt(tweak)));
+        int[] resultBefore = aes2.encrypt(Util.toInt(tweak));
         int[] temp = alpha;
 
         for (int i = 0; i < blockNum - 1; i++) {
@@ -117,12 +110,11 @@ public class XTS {
         int[] T = Util.multiplyGF2_128(resultBefore, alphaPow);
         int[] PP = new int[16];
 
-        // Disini error
         for (int i = 0; i < PP.length; i++) {
             PP[i] = plaintext[i] ^ T[i];
         }
 
-        int[] CC = Util.byte2int(Util.hex2byte(aes1.AESEncrypt(Util.toHEX(PP))));
+        int[] CC = aes1.encrypt(PP);
         int[] result = new int[16];
 
         for (int i = 0; i < result.length; i++) {
@@ -133,7 +125,7 @@ public class XTS {
     }
 
     public int[] blockDec(int[] ciphertext, int blockNum) throws Exception {
-        int[] resultBefore = Util.byte2int(Util.hex2byte(aes2.AESEncrypt(tweak)));
+        int[] resultBefore = aes2.encrypt(Util.toInt(tweak));
         int[] temp = alpha;
 
         for (int i = 0; i < blockNum - 1; i++) {
@@ -144,12 +136,11 @@ public class XTS {
         int[] T = Util.multiplyGF2_128(resultBefore, alphaPow);
         int[] CC = new int[16];
 
-        // Disini error
         for (int i = 0; i < CC.length; i++) {
             CC[i] = ciphertext[i] ^ T[i];
         }
 
-        int[] PP = Util.byte2int(Util.hex2byte(aes1.AESEncrypt(Util.toHEX(CC))));
+        int[] PP = aes1.decrypt(CC);
         int[] result = new int[16];
 
         for (int i = 0; i < result.length; i++) {

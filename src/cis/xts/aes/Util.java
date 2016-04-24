@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package cis.xts.aes;
 
 import java.io.ByteArrayOutputStream;
@@ -11,10 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- *
- * @author prakash
- */
 public class Util {
 
     private static final int GF_SIZE = 128;
@@ -137,31 +128,11 @@ public class Util {
         return 0;
     }
 
-    public static int[] byte2int(byte[] arrby) {
-        int n = arrby.length;
-        int[] arrn = new int[n / 4];
-        int n2 = 0;
-        int n3 = 0;
-        while (n3 < n / 4) {
-            arrn[n3++] = (arrby[n2++] & 255) << 24 | (arrby[n2++] & 255) << 16 | (arrby[n2++] & 255) << 8 | arrby[n2++] & 255;
+    public static int[] toInt(String str) {
+        int[] result = new int[str.length()];
+        for (int i = 0; i < str.length(); i++) {
+            result[i] = Util.hexDigit(str.charAt(i));
         }
-        return arrn;
-    }
-
-    public static String toHEX(int[] ia) {
-        int length = ia.length;
-        char[] buf = new char[length * 10];
-        for (int i = 0, j = 0, k; i < length;) {
-            k = ia[i++];
-            buf[j++] = HEX_DIGITS[(k >>> 28) & 0x0F];
-            buf[j++] = HEX_DIGITS[(k >>> 24) & 0x0F];
-            buf[j++] = HEX_DIGITS[(k >>> 20) & 0x0F];
-            buf[j++] = HEX_DIGITS[(k >>> 16) & 0x0F];
-            buf[j++] = HEX_DIGITS[(k >>> 12) & 0x0F];
-            buf[j++] = HEX_DIGITS[(k >>> 8) & 0x0F];
-            buf[j++] = HEX_DIGITS[(k >>> 4) & 0x0F];
-            buf[j++] = HEX_DIGITS[k & 0x0F];
-        }
-        return new String(buf);
+        return result;
     }
 }
